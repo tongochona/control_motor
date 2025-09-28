@@ -1,0 +1,2 @@
+source /home/ngochoan/esp/rtos/control_motor/build/gdbinit/symbols
+source /home/ngochoan/esp/rtos/control_motor/build/gdbinit/connect
