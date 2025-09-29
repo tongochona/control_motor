@@ -18,6 +18,7 @@ void app_driver_init(void)
         .backward_pin = MOTOR_BACKWARD_PIN,     // Backward direction control pin
     };
 //123
+//tesst
     motor_driver_init(&motor_config);
 
     ESP_ERROR_CHECK(ky040_install_isr_service_once(0));
