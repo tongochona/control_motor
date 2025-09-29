@@ -11,9 +11,6 @@
 
 #include "app_driver.h"
 
-// #define I2C_SDA_GPIO 4
-// #define I2C_SCL_GPIO 5
-// #define I2C_RESET_GPIO -1   // Nếu không có chân RESET thì để -1
 #define LOG_MSG_LEN 128
 
 #define TAG "app_main"
@@ -48,8 +45,6 @@ void vTaskErrorHandle(void *pvParameters);
 void vTaskSendDesiredAngle(void *pvParameters);
 void vTaskSendCurrentAngle(void *pvParameters);
 void vTaskDisplay(void *pvParameters);
-//void vTaskDebug(void *pvParameters);
-//void vTaskOled(void *pvParameters);
 
 TaskHandle_t xTaskErrorHandle_handle = NULL;
 
