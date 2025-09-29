@@ -10,12 +10,6 @@
 
 #define TAG "app_driver"
 
-// Cấu hình I2C cho OLED
-#define I2C_MASTER_SCL_IO           2      // GPIO số cho SCL
-#define I2C_MASTER_SDA_IO           3      // GPIO số cho SDA  
-#define I2C_MASTER_FREQ_HZ          100000  // Tần số I2C
-#define I2C_MASTER_PORT             I2C_NUM_0
-#define OLED_I2C_ADDRESS            0x3C    // Địa chỉ I2C mặc định của OLED
 
 static ky040_handle_t s_enc1 = NULL;
 static ky040_handle_t s_enc2 = NULL;

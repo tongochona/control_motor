@@ -4,20 +4,27 @@
 #include "esp_err.h"
 #include "ssd1306.h"
 
-#define MOTOR_PWM_PIN 5
-#define MOTOR_FORWARD_PIN 6
-#define MOTOR_BACKWARD_PIN 7
+// Cấu hình I2C cho OLED
+#define I2C_MASTER_SCL_IO           2      // GPIO số cho SCL
+#define I2C_MASTER_SDA_IO           3      // GPIO số cho SDA  
+#define I2C_MASTER_FREQ_HZ          100000  // Tần số I2C
+#define I2C_MASTER_PORT             I2C_NUM_0
+#define OLED_I2C_ADDRESS            0x3C    // Địa chỉ I2C mặc định của OLED
+
+#define MOTOR_PWM_PIN 4
+#define MOTOR_FORWARD_PIN 5
+#define MOTOR_BACKWARD_PIN 6
 
 //--- Encoder #1 (phản hồi) ---
 #define ENC1_CLK_GPIO           18
 #define ENC1_DT_GPIO            19
-#define ENC1_SW_GPIO            10
+#define ENC1_SW_GPIO            -1
 #define ENC1_REVERSE_DIR        0   // 1 để đảo chiều cho encoder #1
 
 // --- Encoder #2 (phản hồi) ---
-#define ENC2_CLK_GPIO           8
+#define ENC2_CLK_GPIO           7
 #define ENC2_DT_GPIO            9
-#define ENC2_SW_GPIO            10
+#define ENC2_SW_GPIO            -1
 #define ENC2_REVERSE_DIR        0   // 1 để đảo chiều cho encoder #2
 
 // Debounce cạnh CLK (us)
@@ -29,10 +36,6 @@
 #define ANGLE_MIN               0
 #define ANGLE_MAX               90
 #define ANGLE_SPAN              (ANGLE_MAX - ANGLE_MIN + 1)  // 91
-
-// Bật/tắt nhanh từng task khi test
-#define ENABLE_TASK1            1   // Task1: đọc ENC1 -> Queue1
-#define ENABLE_TASK2            1   // Task2: đọc ENC2 -> Queue2
 
 // Độ dài queue theo phác thảo
 #define Q_DEPTH  

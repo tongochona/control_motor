@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <math.h>
+#include <stdlib.h>
 
 #include "esp_log.h"
 
@@ -83,8 +83,7 @@ void vTaskSendAngle(void *pvParameters)
 
         if (xCurrentTaskHandle == xTaskSendCurrentAngle)
         {
-            // angle = app_driver_encoder_get_count(CURRENT_ANGLE);
-            angle = 50;
+            angle = app_driver_encoder_get_count(CURRENT_ANGLE);
         }
         else
         {
@@ -110,7 +109,7 @@ void vTaskProcessed(void *pvParameters)
     uint8_t current_angle_pre = 0;
     uint8_t desired_angle = 0;
     uint8_t current_angle = 0;
-    uint16_t motor_speed = 0;
+    // uint16_t motor_speed = 0;
 
     int error;
     float derivative;
@@ -164,7 +163,7 @@ void vTaskProcessed(void *pvParameters)
         if (output < -1023)
             output = -1023;
 
-        if (fabs(error) > 10)
+        if (abs(error) > 10)
         {
             if (output > 0)
             {
