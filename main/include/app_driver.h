@@ -2,6 +2,7 @@
 #define __APP_DRIVER_H__
 
 #include "esp_err.h"
+#include "ssd1306.h"
 
 #define MOTOR_PWM_PIN 5
 #define MOTOR_FORWARD_PIN 6
@@ -55,6 +56,9 @@ esp_err_t app_driver_motor_set_direction(bool direction);
 esp_err_t app_driver_motor_stop(void);
 
 uint16_t app_driver_encoder_get_count(int);
+
+SSD1306_t* app_driver_get_oled_device(void);
+
 
 #ifdef __cplusplus
 }

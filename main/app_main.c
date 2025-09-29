@@ -7,6 +7,8 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 
+#include "ssd1306.h"
+
 #include "app_driver.h"
 
 #define LOG_MSG_LEN 128
@@ -254,6 +256,7 @@ void vTaskDisplay(void *pvParameters)
 {
     angle_data_t angle_data;
     char buffer[64];
+    SSD1306_t* dev = app_driver_get_oled_device();
 
     while(1)
     {
