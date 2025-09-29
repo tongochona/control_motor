@@ -1,0 +1,118 @@
+Command: /home/ngochoan/.espressif/python_env/idf5.5_py3.10_env/bin/python /home/ngochoan/esp/esp-idf/tools/idf_monitor.py -p /dev/ttyUSB0 -b 115200 --toolchain-prefix riscv32-esp-elf- --target esp32c3 --revision 3 --decode-panic backtrace /home/ngochoan/esp/rtos/control_motor/build/control_motor.elf /home/ngochoan/esp/rtos/control_motor/build/bootloader/bootloader.elf -m '/home/ngochoan/.espressif/python_env/idf5.5_py3.10_env/bin/python' '/home/ngochoan/esp/esp-idf/tools/idf.py'
+cpu freq: 160000000 Hz
+[0;32mI (162) app_init: Application information:[0m
+I (16ESP-ROM:esp32c3-api1-20210207
+Build:Feb  7 2021
+rst:0x1 (POWERON),boot:0xd (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x15c0
+load:0x403cbf10,len:0xd2c
+load:0x403ce710,len:0x34ec
+entry 0x403cbf28
+[0;32mI (30) boot: ESP-IDF v5.5 2nd stage bootloader[0m
+[0;32mI (30) boot: compile time Sep 27 2025 21:54:12[0m
+[0;32mI (30) boot: chip revision: v0.4[0m
+[0;32mI (30) boot: efuse block revision: v1.3[0m
+[0;32mI (34) boot.esp32c3: SPI Speed      : 80MHz[0m
+[0;32mI (38) boot.esp32c3: SPI Mode       : DIO[0m
+[0;32mI (41) boot.esp32c3: SPI Flash Size : 4MB[0m
+[0;32mI (45) boot: Enabling RNG early entropy source...[0m
+[0;32mI (50) boot: Partition Table:[0m
+[0;32mI (52) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (58) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (65) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (72) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (78) boot: End of partition table[0m
+[0;32mI (81) esp_image: segment 0: paddr=00010020 vaddr=3c020020 size=09614h ( 38420) map[0m
+[0;32mI (95) esp_image: segment 1: paddr=0001963c vaddr=3fc8d800 size=013d8h (  5080) load[0m
+[0;32mI (97) esp_image: segment 2: paddr=0001aa1c vaddr=40380000 size=055fch ( 22012) load[0m
+[0;32mI (108) esp_image: segment 3: paddr=00020020 vaddr=42000020 size=19bb0h (105392) map[0m
+[0;32mI (128) esp_image: segment 4: paddr=00039bd8 vaddr=403855fc size=08164h ( 33124) load[0m
+[0;32mI (135) esp_image: segment 5: paddr=00041d44 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (139) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (139) boot: Disabling RNG early entropy source...[0m
+[0;32mI (153) cpu_start: Unicore app[0m
+[0;32mI (162) cpu_start: Pro cpu start user code[0m
+[0;32mI (162) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (162) app_init: Application information:[0m
+[0;32mI (162) app_init: Project name:     control_motor[0m
+[0;32mI (166) app_init: App version:      1[0m
+[0;32mI (170) app_init: Compile time:     Sep 27 2025 21:54:04[0m
+[0;32mI (175) app_init: ELF file SHA256:  213db162d...[0m
+[0;32mI (179) app_init: ESP-IDF:          v5.5[0m
+[0;32mI (183) efuse_init: Min chip rev:     v0.3[0m
+[0;32mI (186) efuse_init: Max chip rev:     v1.99 [0m
+[0;32mI (190) efuse_init: Chip rev:         v0.4[0m
+[0;32mI (194) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (201) heap_init: At 3FC8FAF0 len 00030510 (193 KiB): RAM[0m
+[0;32mI (206) heap_init: At 3FCC0000 len 0001C710 (113 KiB): Retention RAM[0m
+[0;32mI (212) heap_init: At 3FCDC710 len 00002950 (10 KiB): Retention RAM[0m
+[0;32mI (218) heap_init: At 50000020 len 00001FC8 (7 KiB): RTCRAM[0m
+[0;32mI (224) spi_flash: detected chip: generic[0m
+[0;32mI (227) spi_flash: flash io: dio[0m
+[0;32mI (230) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (236) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (243) main_task: Started on CPU0[0m
+[0;32mI (273) main_task: Calling app_main()[0m
+[0;32mI (273) app_main: Application driver initialization[0m
+[0;32mI (273) app_driver: Motor driver initialized[0m
+Task Name: Task Send Desir
+Task Name: Task Send Curre
+[0;32mI (273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (283) Task Processed: Received Current Angle: 20[0m
+[0;32mI (283) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (293) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (293) main_task: Returned from app_main()[0m
+[0;32mI (1273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (1273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (1273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (1273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (2273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (2273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (2273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (2273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (3273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (3273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (3273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (3273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (4273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (4273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (4273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (4273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (5273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (5273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (5273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (5273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (6273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (6273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (6273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (6273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (7273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (7273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (7273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (7273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (8273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (8273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (8273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (8273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (9273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (9273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (9273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (9273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (10273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (10273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (10273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (10273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (11273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (11273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (11273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (11273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (12273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (12273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (12273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (12273) Task Display: Current Angle: 20, Desired Angle: 10[0m
+[0;32mI (13273) Task Processed: Received Desired Angle: 10[0m
+[0;32mI (13273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (13273) Task Control Motor: Motor Speed: 512, Direction: Backward[0m
+[0;32mI (13273) Task Display: Current Angle: 20, Desired Angle: 10[0m

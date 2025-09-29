@@ -1,0 +1,905 @@
+Command: /home/ngochoan/.espressif/python_env/idf5.5_py3.10_env/bin/python /home/ngochoan/esp/esp-idf/tools/idf_monitor.py -p /dev/ttyUSB0 -b 115200 --toolchain-prefix riscv32-esp-elf- --target esp32c3 --revision 3 --decode-panic backtrace /home/ngochoan/esp/rtos/control_motor/build/control_motor.elf /home/ngochoan/esp/rtos/control_motor/build/bootloader/bootloader.elf -m '/home/ngochoan/.espressif/python_env/idf5.5_py3.10_env/bin/python' '/home/ngochoan/esp/esp-idf/tools/idf.py'
+ (10 KiB): Retention RAM
+[0;32mI (218) heap_init: At�ESP-ROM:esp32c3-api1-20210207[0m
+Build:Feb  7 2021
+rst:0x1 (POWERON),boot:0xd (SPI_FAST_FLASH_BOOT)
+SPIWP:0xee
+mode:DIO, clock div:1
+load:0x3fcd5820,len:0x15c0
+load:0x403cbf10,len:0xd2c
+load:0x403ce710,len:0x34ec
+entry 0x403cbf28
+[0;32mI (30) boot: ESP-IDF v5.5 2nd stage bootloader[0m
+[0;32mI (30) boot: compile time Sep 27 2025 21:54:12[0m
+[0;32mI (30) boot: chip revision: v0.4[0m
+[0;32mI (30) boot: efuse block revision: v1.3[0m
+[0;32mI (34) boot.esp32c3: SPI Speed      : 80MHz[0m
+[0;32mI (38) boot.esp32c3: SPI Mode       : DIO[0m
+[0;32mI (41) boot.esp32c3: SPI Flash Size : 4MB[0m
+[0;32mI (45) boot: Enabling RNG early entropy source...[0m
+[0;32mI (50) boot: Partition Table:[0m
+[0;32mI (52) boot: ## Label            Usage          Type ST Offset   Length[0m
+[0;32mI (58) boot:  0 nvs              WiFi data        01 02 00009000 00006000[0m
+[0;32mI (65) boot:  1 phy_init         RF data          01 01 0000f000 00001000[0m
+[0;32mI (72) boot:  2 factory          factory app      00 00 00010000 00100000[0m
+[0;32mI (78) boot: End of partition table[0m
+[0;32mI (81) esp_image: segment 0: paddr=00010020 vaddr=3c020020 size=09824h ( 38948) map[0m
+[0;32mI (95) esp_image: segment 1: paddr=0001984c vaddr=3fc8d800 size=013d8h (  5080) load[0m
+[0;32mI (97) esp_image: segment 2: paddr=0001ac2c vaddr=40380000 size=053ech ( 21484) load[0m
+[0;32mI (108) esp_image: segment 3: paddr=00020020 vaddr=42000020 size=1a730h (108336) map[0m
+[0;32mI (129) esp_image: segment 4: paddr=0003a758 vaddr=403853ec size=08374h ( 33652) load[0m
+[0;32mI (135) esp_image: segment 5: paddr=00042ad4 vaddr=50000000 size=00020h (    32) load[0m
+[0;32mI (139) boot: Loaded app from partition at offset 0x10000[0m
+[0;32mI (140) boot: Disabling RNG early entropy source...[0m
+[0;32mI (154) cpu_start: Unicore app[0m
+[0;32mI (162) cpu_start: Pro cpu start user code[0m
+[0;32mI (162) cpu_start: cpu freq: 160000000 Hz[0m
+[0;32mI (162) app_init: Application information:[0m
+[0;32mI (162) app_init: Project name:     control_motor[0m
+[0;32mI (167) app_init: App version:      1[0m
+[0;32mI (170) app_init: Compile time:     Sep 27 2025 21:54:04[0m
+[0;32mI (175) app_init: ELF file SHA256:  8c12fb23e...[0m
+[0;32mI (179) app_init: ESP-IDF:          v5.5[0m
+[0;32mI (183) efuse_init: Min chip rev:     v0.3[0m
+[0;32mI (187) efuse_init: Max chip rev:     v1.99 [0m
+[0;32mI (191) efuse_init: Chip rev:         v0.4[0m
+[0;32mI (195) heap_init: Initializing. RAM available for dynamic allocation:[0m
+[0;32mI (201) heap_init: At 3FC8FAF0 len 00030510 (193 KiB): RAM[0m
+[0;32mI (206) heap_init: At 3FCC0000 len 0001C710 (113 KiB): Retention RAM[0m
+[0;32mI (212) heap_init: At 3FCDC710 len 00002950 (10 KiB): Retention RAM[0m
+[0;32mI (218) heap_init: At 50000020 len 00001FC8 (7 KiB): RTCRAM[0m
+[0;32mI (225) spi_flash: detected chip: generic[0m
+[0;32mI (227) spi_flash: flash io: dio[0m
+[0;32mI (230) sleep_gpio: Configure to isolate all GPIO pins in sleep state[0m
+[0;32mI (236) sleep_gpio: Enable automatic switching of GPIO sleep configuration[0m
+[0;32mI (243) main_task: Started on CPU0[0m
+[0;32mI (273) main_task: Calling app_main()[0m
+[0;32mI (273) app_main: Application driver initialization[0m
+[0;32mI (273) app_driver: Motor driver initialized[0m
+Task Name: Task Send Desir
+Task Name: Task Send Curre
+[0;32mI (273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (283) Task Processed: Received Current Angle: 20[0m
+[0;32mI (283) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (293) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (293) main_task: Returned from app_main()[0m
+[0;32mI (1273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (1273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (1273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (1273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (2273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (2273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (2273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (2273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (3273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (3273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (3273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (3273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (4273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (4273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (4273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (4273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (5273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (5273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (5273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (5273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (6273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (6273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (6273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (6273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (7273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (7273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (7273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (7273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (8273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (8273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (8273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (8273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (9273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (9273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (9273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (9273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (10273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (10273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (10273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (10273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (11273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (11273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (11273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (11273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (12273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (12273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (12273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (12273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (13273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (13273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (13273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (13273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (14273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (14273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (14273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (14273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (15273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (15273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (15273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (15273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (16273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (16273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (16273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (16273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (17273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (17273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (17273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (17273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (18273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (18273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (18273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (18273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (19273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (19273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (19273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (19273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (20273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (20273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (20273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (20273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (21273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (21273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (21273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (21273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (22273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (22273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (22273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (22273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (23273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (23273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (23273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (23273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (24273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (24273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (24273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (24273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (25273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (25273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (25273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (25273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (26273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (26273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (26273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (26273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (27273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (27273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (27273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (27273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (28273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (28273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (28273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (28273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (29273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (29273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (29273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (29273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (30273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (30273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (30273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (30273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (31273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (31273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (31273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (31273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (32273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (32273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (32273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (32273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (33273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (33273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (33273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (33273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (34273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (34273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (34273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (34273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (35273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (35273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (35273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (35273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (36273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (36273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (36273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (36273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (37273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (37273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (37273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (37273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (38273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (38273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (38273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (38273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (39273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (39273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (39273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (39273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (40273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (40273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (40273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (40273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (41273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (41273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (41273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (41273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (42273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (42273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (42273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (42273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (43273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (43273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (43273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (43273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (44273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (44273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (44273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (44273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (45273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (45273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (45273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (45273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (46273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (46273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (46273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (46273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (47273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (47273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (47273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (47273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (48273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (48273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (48273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (48273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (49273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (49273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (49273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (49273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (50273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (50273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (50273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (50273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (51273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (51273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (51273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (51273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (52273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (52273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (52273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (52273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (53273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (53273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (53273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (53273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (54273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (54273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (54273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (54273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (55273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (55273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (55273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (55273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (56273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (56273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (56273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (56273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (57273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (57273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (57273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (57273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (58273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (58273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (58273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (58273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (59273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (59273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (59273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (59273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (60273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (60273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (60273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (60273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (61273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (61273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (61273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (61273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (62273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (62273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (62273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (62273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (63273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (63273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (63273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (63273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (64273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (64273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (64273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (64273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (65273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (65273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (65273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (65273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (66273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (66273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (66273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (66273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (67273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (67273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (67273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (67273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (68273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (68273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (68273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (68273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (69273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (69273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (69273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (69273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (70273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (70273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (70273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (70273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (71273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (71273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (71273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (71273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (72273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (72273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (72273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (72273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (73273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (73273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (73273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (73273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (74273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (74273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (74273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (74273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (75273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (75273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (75273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (75273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (76273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (76273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (76273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (76273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (77273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (77273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (77273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (77273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (78273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (78273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (78273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (78273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (79273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (79273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (79273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (79273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (80273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (80273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (80273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (80273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (81273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (81273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (81273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (81273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (82273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (82273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (82273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (82273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (83273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (83273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (83273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (83273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (84273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (84273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (84273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (84273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (85273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (85273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (85273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (85273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (86273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (86273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (86273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (86273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (87273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (87273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (87273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (87273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (88273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (88273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (88273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (88273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (89273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (89273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (89273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (89273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (90273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (90273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (90273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (90273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (91273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (91273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (91273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (91273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (92273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (92273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (92273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (92273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (93273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (93273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (93273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (93273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (94273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (94273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (94273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (94273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (95273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (95273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (95273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (95273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (96273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (96273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (96273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (96273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (97273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (97273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (97273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (97273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (98273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (98273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (98273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (98273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (99273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (99273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (99273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (99273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (100273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (100273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (100273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (100273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (101273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (101273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (101273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (101273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (102273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (102273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (102273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (102273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (103273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (103273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (103273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (103273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (104273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (104273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (104273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (104273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (105273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (105273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (105273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (105273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (106273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (106273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (106273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (106273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (107273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (107273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (107273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (107273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (108273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (108273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (108273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (108273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (109273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (109273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (109273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (109273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (110273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (110273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (110273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (110273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (111273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (111273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (111273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (111273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (112273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (112273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (112273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (112273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (113273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (113273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (113273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (113273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (114273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (114273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (114273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (114273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (115273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (115273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (115273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (115273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (116273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (116273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (116273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (116273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (117273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (117273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (117273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (117273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (118273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (118273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (118273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (118273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (119273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (119273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (119273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (119273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (120273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (120273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (120273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (120273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (121273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (121273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (121273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (121273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (122273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (122273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (122273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (122273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (123273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (123273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (123273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (123273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (124273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (124273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (124273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (124273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (125273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (125273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (125273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (125273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (126273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (126273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (126273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (126273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (127273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (127273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (127273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (127273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (128273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (128273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (128273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (128273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (129273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (129273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (129273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (129273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (130273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (130273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (130273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (130273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (131273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (131273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (131273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (131273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (132273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (132273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (132273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (132273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (133273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (133273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (133273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (133273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (134273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (134273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (134273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (134273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (135273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (135273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (135273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (135273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (136273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (136273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (136273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (136273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (137273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (137273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (137273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (137273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (138273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (138273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (138273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (138273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (139273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (139273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (139273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (139273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (140273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (140273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (140273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (140273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (141273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (141273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (141273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (141273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (142273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (142273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (142273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (142273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (143273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (143273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (143273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (143273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (144273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (144273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (144273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (144273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (145273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (145273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (145273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (145273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (146273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (146273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (146273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (146273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (147273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (147273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (147273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (147273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (148273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (148273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (148273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (148273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (149273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (149273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (149273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (149273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (150273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (150273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (150273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (150273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (151273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (151273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (151273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (151273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (152273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (152273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (152273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (152273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (153273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (153273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (153273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (153273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (154273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (154273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (154273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (154273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (155273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (155273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (155273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (155273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (156273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (156273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (156273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (156273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (157273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (157273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (157273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (157273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (158273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (158273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (158273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (158273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (159273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (159273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (159273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (159273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (160273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (160273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (160273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (160273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (161273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (161273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (161273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (161273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (162273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (162273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (162273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (162273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (163273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (163273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (163273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (163273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (164273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (164273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (164273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (164273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (165273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (165273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (165273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (165273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (166273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (166273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (166273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (166273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (167273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (167273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (167273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (167273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (168273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (168273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (168273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (168273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (169273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (169273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (169273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (169273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (170273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (170273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (170273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (170273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (171273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (171273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (171273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (171273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (172273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (172273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (172273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (172273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (173273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (173273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (173273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (173273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (174273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (174273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (174273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (174273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (175273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (175273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (175273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (175273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (176273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (176273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (176273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (176273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (177273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (177273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (177273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (177273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (178273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (178273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (178273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (178273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (179273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (179273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (179273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (179273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (180273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (180273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (180273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (180273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (181273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (181273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (181273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (181273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (182273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (182273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (182273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (182273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (183273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (183273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (183273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (183273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (184273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (184273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (184273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (184273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (185273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (185273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (185273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (185273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (186273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (186273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (186273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (186273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (187273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (187273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (187273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (187273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (188273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (188273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (188273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (188273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (189273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (189273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (189273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (189273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (190273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (190273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (190273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (190273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (191273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (191273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (191273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (191273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (192273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (192273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (192273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (192273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (193273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (193273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (193273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (193273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (194273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (194273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (194273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (194273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (195273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (195273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (195273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (195273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (196273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (196273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (196273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (196273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (197273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (197273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (197273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (197273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (198273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (198273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (198273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (198273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (199273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (199273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (199273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (199273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (200273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (200273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (200273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (200273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (201273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (201273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (201273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (201273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (202273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (202273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (202273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (202273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (203273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (203273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (203273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (203273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (204273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (204273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (204273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (204273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (205273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (205273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (205273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (205273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (206273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (206273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (206273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (206273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (207273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (207273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (207273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (207273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (208273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (208273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (208273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (208273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (209273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (209273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (209273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (209273) Task Display: Current Angle: 20, Desired Angle: 30[0m
+[0;32mI (210273) Task Processed: Received Desired Angle: 30[0m
+[0;32mI (210273) Task Processed: Received Current Angle: 20[0m
+[0;32mI (210273) Task Control Motor: Motor Speed: 1023, Direction: Forward[0m
+[0;32mI (210273) Task Display: Current Angle: 20, Desired Angle: 30[0m
