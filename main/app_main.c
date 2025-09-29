@@ -26,7 +26,7 @@ typedef struct
 
 typedef struct
 {
-    uint8_t speed;
+    uint16_t speed;
     bool direction; // true for forward, false for backward
 } motor_command_t;
 
@@ -120,7 +120,7 @@ void vTaskSendDesiredAngle(void *pvParameters)
     while (1)
     {
         // Simulate sending desired and current angles
-        angle = 10; // Random angle between 0 and 359
+        angle = 30; // Random angle between 0 and 359
         // angle = (angle + 10) % 360; // Example angle increment
         if (xQueueSend(xQueueAngle_handle, &angle, 0) != pdPASS)
         {
@@ -146,7 +146,7 @@ void vTaskSendCurrentAngle(void *pvParameters)
     while (1)
     {
         // Simulate sending desired and current angles
-        angle = rand() % 360; // Random angle between 0 and 359
+        angle = 20; // Random angle between 0 and 359
         // angle = (angle + 10) % 360; // Example angle increment
         if (xQueueSend(xQueueAngle_handle, &angle, 0) != pdPASS)
         {
@@ -168,7 +168,7 @@ void vTaskProcessed(void *pvParameters)
     uint8_t current_angle_pre = 0;
     uint8_t desired_angle = 0;
     uint8_t current_angle = 0;
-    uint8_t motor_speed = 0;
+    uint16_t motor_speed = 0;
     angle_data_t angle_data;
     motor_command_t motor_command;
     while (1)
@@ -193,7 +193,7 @@ void vTaskProcessed(void *pvParameters)
         angle_data.desired = desired_angle;
         // Process control algorithm here (e.g., PID) to determine motor speed and direction
         motor_speed = (desired_angle > current_angle) ? (desired_angle - current_angle) : (current_angle - desired_angle);
-        motor_command.speed = motor_speed;
+        motor_command.speed = 1023;
         motor_command.direction = (desired_angle >= current_angle) ? true : false; // true for forward, false for backward
         // Send motor command to motor control task
         if (xQueueSend(xQueueSpeed_handle, &motor_command, 0) != pdPASS)

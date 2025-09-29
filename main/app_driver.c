@@ -22,9 +22,9 @@ void app_driver_init(void)
 {
     // Khởi tạo motor driver
     motor_config_t motor_config = {
-        .pwm_pin = 18,          // PWM output pin
-        .forward_pin = 19,     // Forward direction control pin
-        .backward_pin = 21     // Backward direction control pin
+        .pwm_pin = 5,          // PWM output pin
+        .forward_pin = 6,     // Forward direction control pin
+        .backward_pin = 7,     // Backward direction control pin
     };
     motor_driver_init(&motor_config);
     ESP_LOGI(TAG, "Motor driver initialized");

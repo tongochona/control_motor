@@ -44,6 +44,21 @@ esp_err_t motor_driver_init(motor_config_t *config)
     motor.pwm_pin = config->pwm_pin;
     motor.forward_pin = config->forward_pin;
     motor.backward_pin = config->backward_pin;
+
+    // Configure GPIO pins for direction control
+    gpio_config_t io_conf = {
+        .intr_type = GPIO_INTR_DISABLE,
+        .mode = GPIO_MODE_OUTPUT,
+        .pin_bit_mask = (1ULL << motor.forward_pin) | (1ULL << motor.backward_pin),
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .pull_up_en = GPIO_PULLUP_DISABLE
+    };
+    ret = gpio_config(&io_conf);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "gpio_config failed");
+        return ret;
+    }
+
     return ESP_OK;
 }
 
