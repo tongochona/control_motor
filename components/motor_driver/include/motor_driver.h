@@ -20,6 +20,7 @@ extern "C"
     esp_err_t motor_driver_init(motor_config_t *config);
     esp_err_t motor_set_direction(bool forward);
     esp_err_t motor_set_speed(uint32_t speed);
+    esp_err_t motor_stop(void);
 
 #ifdef __cplusplus
 }

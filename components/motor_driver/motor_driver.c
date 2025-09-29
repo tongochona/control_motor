@@ -74,3 +74,13 @@ esp_err_t motor_set_speed(uint32_t duty) {
     ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
     return ESP_OK;
 }
+
+esp_err_t motor_stop(void)
+{
+    // Set duty cycle to 0 to stop the motor
+    gpio_set_level(motor.forward_pin, 0);
+    gpio_set_level(motor.backward_pin, 0);
+    ledc_set_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0, 0);
+    ledc_update_duty(LEDC_LOW_SPEED_MODE, LEDC_CHANNEL_0);
+    return ESP_OK;
+}
