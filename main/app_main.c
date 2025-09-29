@@ -5,8 +5,16 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/queue.h"
+// #include "driver/i2c.h"
+#include "ssd1306.h"
+#include <string.h>
 
 #include "app_driver.h"
+
+#define I2C_SDA_GPIO 4
+#define I2C_SCL_GPIO 5
+#define I2C_RESET_GPIO -1   // Nếu không có chân RESET thì để -1
+#define LOG_MSG_LEN 128
 
 #define TAG "app_main"
 
@@ -28,12 +36,21 @@ typedef struct
     QueueHandle_t queue_handle;
 } task_info_t;
 
+typedef struct{
+    char msg[LOG_MSG_LEN];
+} log_message_t;
+
+QueueHandle_t xQueueLog;
+QueueHandle_t xQueueDisplay_handle;
+
 void vTaskProcessed(void *pvParameters);
 void vTaskControlMotor(void *pvParameters);
 void vTaskErrorHandle(void *pvParameters);
 void vTaskSendDesiredAngle(void *pvParameters);
 void vTaskSendCurrentAngle(void *pvParameters);
 void vTaskDisplay(void *pvParameters);
+void vTaskDebug(void *pvParameters);
+//void vTaskOled(void *pvParameters);
 
 TaskHandle_t xTaskErrorHandle_handle = NULL;
 
@@ -54,6 +71,8 @@ void app_main(void)
     xQueueSpeed_handle = xQueueCreate(3, sizeof(motor_command_t));
     xQueueError_handle = xQueueCreate(2, sizeof(task_info_t));
     xQueueDisplay_handle = xQueueCreate(3, sizeof(angle_data_t));
+    xQueueLog = xQueueCreate(10, sizeof(log_message_t));
+    //xQueueOled = xQueueCreate(3, sizeof(angle_data_t));
 
     xTaskCreate(vTaskSendDesiredAngle, "Task Send Desired Angle", 2048, &xQueueControl_handle, 4, NULL);
     xTaskCreate(vTaskSendCurrentAngle, "Task Send Current Angle", 2048, &xQueueFeedback_handle, 5, NULL);
@@ -61,6 +80,8 @@ void app_main(void)
     xTaskCreate(vTaskControlMotor, "Task Control Motor", 2048, NULL, 4, NULL);
     xTaskCreate(vTaskErrorHandle, "Task Error Handle", 2048, NULL, 1, &xTaskErrorHandle_handle);
     xTaskCreate(vTaskDisplay, "Task Display", 2048, NULL, 3, NULL);
+    xTaskCreate(vTaskDebug, "uart_debug_task", 2048, NULL, 3, NULL);
+    //xTaskCreate(vTaskOled, "oled_task", 4096, NULL, 3, NULL);
 }
 
 // void vTaskSendAngle(void *pvParameters)
@@ -235,15 +256,49 @@ void vTaskErrorHandle(void *pvParameters)
     }
 }
 
-void vTaskDisplay(void *pvParameters)
+
+// DEBUG TASK
+void vTaskDebug(void *pvParameters)
 {
-    angle_data_t angle_data;
-    while (1)
+    log_message_t log_msg;
+    while(1)
     {
-        if (xQueueReceive(xQueueDisplay_handle, &angle_data, portMAX_DELAY) == pdPASS)
+        if(xQueueReceive(xQueueLog, &log_msg, portMAX_DELAY) == pdTRUE)
         {
-            char* task_name = pcTaskGetName(NULL);
-            ESP_LOGI(task_name, "Current Angle: %d, Desired Angle: %d", angle_data.current, angle_data.desired);
+            printf("[DEBUG] %s\n", log_msg.msg);
         }
     }
+    vTaskDelay(pdMS_TO_TICKS(500));
 }
+
+// OLED TASK
+void vTaskDisplay(void *pvParameters)
+{
+    ESP_LOGI(TAG, "OLED Task started");
+    
+    // Lấy device OLED từ app_driver (đã được khởi tạo sẵn)
+    SSD1306_t *dev = app_driver_get_oled_device();
+    
+    // Clear màn hình và hiển thị thông báo
+    ssd1306_clear_screen(dev, false);
+    ssd1306_display_text(dev, 0, "System Ready", 12, false);
+    
+    angle_data_t angle_data;
+    char buffer[32];
+
+    while(1)
+    {
+        if(xQueueReceive(xQueueDisplay_handle, &angle_data, portMAX_DELAY) == pdTRUE)
+        {
+            //ssd1306_clear_screen(&dev, false);
+            snprintf(buffer, sizeof(buffer), "Current: %d", angle_data.current);
+            ssd1306_display_text(dev, 0, buffer, strlen(buffer), false);
+
+            ssd1306_clear_line(dev, 1, false);
+            snprintf(buffer, sizeof(buffer), "Desired: %d", angle_data.desired);
+            ssd1306_display_text(dev, 1, buffer, strlen(buffer), false);
+        }
+        taskYIELD();
+    }
+}
+

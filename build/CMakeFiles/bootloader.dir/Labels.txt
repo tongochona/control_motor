@@ -1,13 +1,13 @@
 # Target labels
  bootloader
 # Source files and their labels
-/home/ngochoan/esp/rtos/control_motor/build/CMakeFiles/bootloader
-/home/ngochoan/esp/rtos/control_motor/build/CMakeFiles/bootloader.rule
-/home/ngochoan/esp/rtos/control_motor/build/CMakeFiles/bootloader-complete.rule
-/home/ngochoan/esp/rtos/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
-/home/ngochoan/esp/rtos/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
-/home/ngochoan/esp/rtos/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
-/home/ngochoan/esp/rtos/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
-/home/ngochoan/esp/rtos/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
-/home/ngochoan/esp/rtos/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
-/home/ngochoan/esp/rtos/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
+/home/hung/esp/midterm/control_motor/build/CMakeFiles/bootloader
+/home/hung/esp/midterm/control_motor/build/CMakeFiles/bootloader.rule
+/home/hung/esp/midterm/control_motor/build/CMakeFiles/bootloader-complete.rule
+/home/hung/esp/midterm/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+/home/hung/esp/midterm/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/home/hung/esp/midterm/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/home/hung/esp/midterm/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/home/hung/esp/midterm/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/home/hung/esp/midterm/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/home/hung/esp/midterm/control_motor/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule

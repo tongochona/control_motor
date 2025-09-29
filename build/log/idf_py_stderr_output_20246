@@ -1,0 +1,12 @@
+Command: ninja all
+CMake Error at /home/hung/esp/esp-idf/tools/cmake/build.cmake:332 (message):
+  Failed to resolve component 'ssd1306' required by component 'motor_driver':
+  unknown name.
+Call Stack (most recent call first):
+  /home/hung/esp/esp-idf/tools/cmake/build.cmake:375 (__build_resolve_and_add_req)
+  /home/hung/esp/esp-idf/tools/cmake/build.cmake:705 (__build_expand_requirements)
+  /home/hung/esp/esp-idf/tools/cmake/project.cmake:740 (idf_build_process)
+  CMakeLists.txt:9 (project)
+
+
+ninja: error: rebuilding 'build.ninja': subcommand failed
