@@ -9,11 +9,8 @@
 
 #include "app_driver.h"
 
-<<<<<<< HEAD
 #define LOG_MSG_LEN 128
 
-=======
->>>>>>> 4e64369f6300e16bf674cc55948af08591a78842
 #define TAG "app_main"
 
 typedef struct
