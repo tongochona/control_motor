@@ -5,7 +5,6 @@
 #include "motor_driver.h"
 #include "encoder_driver.h"
 
-#include "driver/i2c.h"
 #include "ssd1306.h"
 #include "fonts.h"
 
