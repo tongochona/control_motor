@@ -7,11 +7,7 @@
 #include "freertos/task.h"
 #include "freertos/queue.h"
 
-#include "ssd1306.h"
-
 #include "app_driver.h"
-
-#define LOG_MSG_LEN 128
 
 #define TAG "app_main"
 
@@ -254,20 +250,13 @@ void vTaskErrorHandle(void *pvParameters)
 void vTaskDisplay(void *pvParameters)
 {
     angle_data_t angle_data;
-    char buffer[64];
-    SSD1306_t* dev = app_driver_get_oled_device();
 
     while(1)
     {
         if (xQueueReceive(xQueueDisplay_handle, &angle_data, portMAX_DELAY) == pdPASS)
         {
-            //ssd1306_clear_screen(dev, false);
-            snprintf(buffer, sizeof(buffer), "Current: %d", angle_data.current);
-            ssd1306_display_text(dev, 0, buffer, strlen(buffer), false);
 
-            //ssd1306_clear_line(dev, 1, false);
-            snprintf(buffer, sizeof(buffer), "Desired: %d", angle_data.desired);
-            ssd1306_display_text(dev, 2, buffer, strlen(buffer), false);
+            app_driver_display_angle(angle_data.current, angle_data.desired);
         }
     }
 }

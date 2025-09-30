@@ -2,14 +2,11 @@
 #define __APP_DRIVER_H__
 
 #include "esp_err.h"
-#include "ssd1306.h"
 
 // Cấu hình I2C cho OLED
-#define I2C_MASTER_SCL_IO           3      // GPIO số cho SCL
-#define I2C_MASTER_SDA_IO           2      // GPIO số cho SDA  
-#define I2C_MASTER_FREQ_HZ          100000  // Tần số I2C
-#define I2C_MASTER_PORT             I2C_NUM_0
-#define OLED_I2C_ADDRESS            0x3C    // Địa chỉ I2C mặc định của OLED
+#define I2C_MASTER_SDA_IO       2        // Change to your SDA pin
+#define I2C_MASTER_SCL_IO       3        // Change to your SCL pin
+#define I2C_MASTER_FREQ_HZ      100000   // 400kHz
 
 #define MOTOR_PWM_PIN 1
 #define MOTOR_FORWARD_PIN 5
@@ -60,7 +57,9 @@ esp_err_t app_driver_motor_stop(void);
 
 uint16_t app_driver_encoder_get_count(int);
 
-SSD1306_t* app_driver_get_oled_device(void);
+// SSD1306_t* app_driver_get_oled_device(void);
+
+esp_err_t app_driver_display_angle(uint8_t current, uint8_t desired);
 
 
 #ifdef __cplusplus

@@ -1,881 +1,693 @@
-#include <string.h>
+/**
+ * original author:  Tilen Majerle<tilen@majerle.eu>
+ * modification for STM32f10x: Alexander Lutsai<s.lyra@ya.ru>
 
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+   ----------------------------------------------------------------------
+   	Copyright (C) Alexander Lutsai, 2016
+    Copyright (C) Tilen Majerle, 2015
 
-#include "esp_log.h"
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
 
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+   ----------------------------------------------------------------------
+ */
 #include "ssd1306.h"
-#include "font8x8_basic.h"
+#include "driver/i2c_master.h"
+#include "esp_log.h"
+#include "freertos/FreeRTOS.h"
 
-#define PACK8 __attribute__((aligned( __alignof__( uint8_t ) ), packed ))
+static const char *TAG = "SSD1306";
 
-typedef union out_column_t {
-	uint32_t u32;
-	uint8_t  u8[4];
-} PACK8 out_column_t;
+// I2C Configuration
 
-void ssd1306_init(SSD1306_t * dev, int width, int height)
+static i2c_master_bus_handle_t bus_handle;
+static i2c_master_dev_handle_t dev_handle;
+
+// extern I2C_HandleTypeDef hi2c1;
+/* Write command */
+#define SSD1306_WRITECOMMAND(command)      ssd1306_I2C_Write(SSD1306_I2C_ADDR, 0x00, (command))
+/* Write data */
+#define SSD1306_WRITEDATA(data)            ssd1306_I2C_Write(SSD1306_I2C_ADDR, 0x40, (data))
+/* Absolute value */
+#define ABS(x)   ((x) > 0 ? (x) : -(x))
+
+/* SSD1306 data buffer */
+static uint8_t SSD1306_Buffer[SSD1306_WIDTH * SSD1306_HEIGHT / 8];
+
+/* Private SSD1306 structure */
+typedef struct {
+	uint16_t CurrentX;
+	uint16_t CurrentY;
+	uint8_t Inverted;
+	uint8_t Initialized;
+} SSD1306_t;
+
+/* Private variable */
+static SSD1306_t SSD1306;
+
+
+#define SSD1306_RIGHT_HORIZONTAL_SCROLL              0x26
+#define SSD1306_LEFT_HORIZONTAL_SCROLL               0x27
+#define SSD1306_VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL 0x29
+#define SSD1306_VERTICAL_AND_LEFT_HORIZONTAL_SCROLL  0x2A
+#define SSD1306_DEACTIVATE_SCROLL                    0x2E // Stop scroll
+#define SSD1306_ACTIVATE_SCROLL                      0x2F // Start scroll
+#define SSD1306_SET_VERTICAL_SCROLL_AREA             0xA3 // Set scroll range
+
+#define SSD1306_NORMALDISPLAY       0xA6
+#define SSD1306_INVERTDISPLAY       0xA7
+
+
+void SSD1306_ScrollRight(uint8_t start_row, uint8_t end_row)
 {
-	if (dev->_address == SPI_ADDRESS) {
-		spi_init(dev, width, height);
-	} else {
-		i2c_init(dev, width, height);
-	}
-	// Initialize internal buffer
-	for (int i=0;i<dev->_pages;i++) {
-		memset(dev->_page[i]._segs, 0, 128);
-	}
-}
-
-int ssd1306_get_width(SSD1306_t * dev)
-{
-	return dev->_width;
-}
-
-int ssd1306_get_height(SSD1306_t * dev)
-{
-	return dev->_height;
-}
-
-int ssd1306_get_pages(SSD1306_t * dev)
-{
-	return dev->_pages;
-}
-
-void ssd1306_show_buffer(SSD1306_t * dev)
-{
-	if (dev->_address == SPI_ADDRESS) {
-		for (int page=0; page<dev->_pages;page++) {
-			spi_display_image(dev, page, 0, dev->_page[page]._segs, dev->_width);
-		}
-	} else {
-		for (int page=0; page<dev->_pages;page++) {
-			i2c_display_image(dev, page, 0, dev->_page[page]._segs, dev->_width);
-		}
-	}
-}
-
-void ssd1306_set_buffer(SSD1306_t * dev, const uint8_t * buffer)
-{
-	int index = 0;
-	for (int page=0; page<dev->_pages;page++) {
-		memcpy(&dev->_page[page]._segs, &buffer[index], 128);
-		index = index + 128;
-	}
-}
-
-void ssd1306_get_buffer(SSD1306_t * dev, uint8_t * buffer)
-{
-	int index = 0;
-	for (int page=0; page<dev->_pages;page++) {
-		memcpy(&buffer[index], &dev->_page[page]._segs, 128);
-		index = index + 128;
-	}
-}
-
-void ssd1306_set_page(SSD1306_t * dev, int page, const uint8_t * buffer)
-{
-	memcpy(&dev->_page[page]._segs, buffer, 128);
-}
-
-void ssd1306_get_page(SSD1306_t * dev, int page, uint8_t * buffer)
-{
-	memcpy(buffer, &dev->_page[page]._segs, 128);
-}
-
-void ssd1306_display_image(SSD1306_t * dev, int page, int seg, const uint8_t * images, int width)
-{
-	if (dev->_address == SPI_ADDRESS) {
-		spi_display_image(dev, page, seg, images, width);
-	} else {
-		i2c_display_image(dev, page, seg, images, width);
-	}
-	// Set to internal buffer
-	memcpy(&dev->_page[page]._segs[seg], images, width);
-}
-
-void ssd1306_display_text(SSD1306_t * dev, int page, const char * text, int text_len, bool invert)
-{
-	if (page >= dev->_pages) return;
-	int _text_len = text_len;
-	if (_text_len > 16) _text_len = 16;
-
-	int seg = 0;
-	uint8_t image[8];
-	for (int i = 0; i < _text_len; i++) {
-		memcpy(image, font8x8_basic_tr[(uint8_t)text[i]], 8);
-		if (invert) ssd1306_invert(image, 8);
-		if (dev->_flip) ssd1306_flip(image, 8);
-		ssd1306_display_image(dev, page, seg, image, 8);
-		seg = seg + 8;
-	}
-}
-
-void ssd1306_display_text_box1(SSD1306_t * dev, int page, int seg, const char * text, int box_width, int text_len, bool invert, int delay)
-{
-	if (page >= dev->_pages) return;
-	int text_box_pixel = box_width * 8;
-	if (seg + text_box_pixel > dev->_width) return;
-
-	int _seg = seg;
-	uint8_t image[8];
-	for (int i = 0; i < box_width; i++) {
-		memcpy(image, font8x8_basic_tr[(uint8_t)text[i]], 8);
-		if (invert) ssd1306_invert(image, 8);
-		if (dev->_flip) ssd1306_flip(image, 8);
-		ssd1306_display_image(dev, page, _seg, image, 8);
-		_seg = _seg + 8;
-	}
-	vTaskDelay(delay);
-
-	// Horizontally scroll inside the box
-	for (int _text=box_width;_text<text_len;_text++) {
-		memcpy(image, font8x8_basic_tr[(uint8_t)text[_text]], 8);
-		if (invert) ssd1306_invert(image, 8);
-		if (dev->_flip) ssd1306_flip(image, 8);
-		for (int _bit=0;_bit<8;_bit++) {
-			for (int _pixel=0;_pixel<text_box_pixel;_pixel++) {
-				//ESP_LOGI(__FUNCTION__, "_text=%d _bit=%d _pixel=%d", _text, _bit, _pixel);
-				dev->_page[page]._segs[_pixel+seg] = dev->_page[page]._segs[_pixel+seg+1];
-			}
-			dev->_page[page]._segs[seg+text_box_pixel-1] = image[_bit];
-			ssd1306_display_image(dev, page, seg, &dev->_page[page]._segs[seg], text_box_pixel);
-			vTaskDelay(delay);
-		}
-	}
-}
-
-void ssd1306_display_text_box2(SSD1306_t * dev, int page, int seg, const char * text, int box_width, int text_len, bool invert, int delay)
-{
-	if (page >= dev->_pages) return;
-	int text_box_pixel = box_width * 8;
-	if (seg + text_box_pixel > dev->_width) return;
-
-	int _seg = seg;
-	uint8_t image[8];
-
-	// Fill the text box with blanks
-	for (int i = 0; i < box_width; i++) {
-		//memcpy(image, font8x8_basic_tr[(uint8_t)text[i]], 8);
-		memcpy(image, font8x8_basic_tr[0x20], 8);
-		if (invert) ssd1306_invert(image, 8);
-		if (dev->_flip) ssd1306_flip(image, 8);
-		ssd1306_display_image(dev, page, _seg, image, 8);
-		_seg = _seg + 8;
-	}
-	vTaskDelay(delay);
-
-	// Horizontally scroll inside the box
-	for (int _text=0;_text<text_len;_text++) {
-		memcpy(image, font8x8_basic_tr[(uint8_t)text[_text]], 8);
-		if (invert) ssd1306_invert(image, 8);
-		if (dev->_flip) ssd1306_flip(image, 8);
-		for (int _bit=0;_bit<8;_bit++) {
-			for (int _pixel=0;_pixel<text_box_pixel;_pixel++) {
-				//ESP_LOGI(__FUNCTION__, "_text=%d _bit=%d _pixel=%d", _text, _bit, _pixel);
-				dev->_page[page]._segs[_pixel+seg] = dev->_page[page]._segs[_pixel+seg+1];
-			}
-			dev->_page[page]._segs[seg+text_box_pixel-1] = image[_bit];
-			ssd1306_display_image(dev, page, seg, &dev->_page[page]._segs[seg], text_box_pixel);
-			vTaskDelay(delay);
-		}
-	}
-
-	// Horizontally scroll inside the box
-	for (int _text=0;_text<box_width;_text++) {
-		memcpy(image, font8x8_basic_tr[0x20], 8);
-		if (invert) ssd1306_invert(image, 8);
-		if (dev->_flip) ssd1306_flip(image, 8);
-		for (int _bit=0;_bit<8;_bit++) {
-			for (int _pixel=0;_pixel<text_box_pixel;_pixel++) {
-				//ESP_LOGI(__FUNCTION__, "_text=%d _bit=%d _pixel=%d", _text, _bit, _pixel);
-				dev->_page[page]._segs[_pixel+seg] = dev->_page[page]._segs[_pixel+seg+1];
-			}
-			dev->_page[page]._segs[seg+text_box_pixel-1] = image[_bit];
-			ssd1306_display_image(dev, page, seg, &dev->_page[page]._segs[seg], text_box_pixel);
-			vTaskDelay(delay);
-		}
-	}
-}
-
-// by Coert Vonk
-void 
-ssd1306_display_text_x3(SSD1306_t * dev, int page, const char * text, int text_len, bool invert)
-{
-	if (page >= dev->_pages) return;
-	int _text_len = text_len;
-	if (_text_len > 5) _text_len = 5;
-
-	int seg = 0;
-
-	for (int nn = 0; nn < _text_len; nn++) {
-
-		uint8_t const * const in_columns = font8x8_basic_tr[(uint8_t)text[nn]];
-
-		// make the character 3x as high
-		out_column_t out_columns[8];
-		memset(out_columns, 0, sizeof(out_columns));
-
-		for (int xx = 0; xx < 8; xx++) { // for each column (x-direction)
-
-			uint32_t in_bitmask = 0b1;
-			uint32_t out_bitmask = 0b111;
-
-			for (int yy = 0; yy < 8; yy++) { // for pixel (y-direction)
-				if (in_columns[xx] & in_bitmask) {
-					out_columns[xx].u32 |= out_bitmask;
-				}
-				in_bitmask <<= 1;
-				out_bitmask <<= 3;
-			}
-		}
-
-		// render character in 8 column high pieces, making them 3x as wide
-		for (int yy = 0; yy < 3; yy++)	{ // for each group of 8 pixels high (y-direction)
-
-			uint8_t image[24];
-			for (int xx = 0; xx < 8; xx++) { // for each column (x-direction)
-				image[xx*3+0] = 
-				image[xx*3+1] = 
-				image[xx*3+2] = out_columns[xx].u8[yy];
-			}
-			if (invert) ssd1306_invert(image, 24);
-			if (dev->_flip) ssd1306_flip(image, 24);
-			if (dev->_address == SPI_ADDRESS) {
-				spi_display_image(dev, page+yy, seg, image, 24);
-			} else {
-				i2c_display_image(dev, page+yy, seg, image, 24);
-			}
-			memcpy(&dev->_page[page+yy]._segs[seg], image, 24);
-		}
-		seg = seg + 24;
-	}
-}
-
-void ssd1306_clear_screen(SSD1306_t * dev, bool invert)
-{
-	char space[16];
-	memset(space, 0x00, sizeof(space));
-	for (int page = 0; page < dev->_pages; page++) {
-		ssd1306_display_text(dev, page, space, sizeof(space), invert);
-	}
-}
-
-void ssd1306_clear_line(SSD1306_t * dev, int page, bool invert)
-{
-	char space[16];
-	memset(space, 0x00, sizeof(space));
-	ssd1306_display_text(dev, page, space, sizeof(space), invert);
-}
-
-void ssd1306_contrast(SSD1306_t * dev, int contrast)
-{
-	if (dev->_address == SPI_ADDRESS) {
-		spi_contrast(dev, contrast);
-	} else {
-		i2c_contrast(dev, contrast);
-	}
-}
-
-void ssd1306_software_scroll(SSD1306_t * dev, int start, int end)
-{
-	ESP_LOGD(__FUNCTION__, "software_scroll start=%d end=%d _pages=%d", start, end, dev->_pages);
-	if (start < 0 || end < 0) {
-		dev->_scEnable = false;
-	} else if (start >= dev->_pages || end >= dev->_pages) {
-		dev->_scEnable = false;
-	} else {
-		dev->_scEnable = true;
-		dev->_scStart = start;
-		dev->_scEnd = end;
-		dev->_scDirection = 1;
-		if (start > end ) dev->_scDirection = -1;
-	}
+  SSD1306_WRITECOMMAND (SSD1306_RIGHT_HORIZONTAL_SCROLL);  // send 0x26
+  SSD1306_WRITECOMMAND (0x00);  // send dummy
+  SSD1306_WRITECOMMAND(start_row);  // start page address
+  SSD1306_WRITECOMMAND(0X00);  // time interval 5 frames
+  SSD1306_WRITECOMMAND(end_row);  // end page address
+  SSD1306_WRITECOMMAND(0X00);
+  SSD1306_WRITECOMMAND(0XFF);
+  SSD1306_WRITECOMMAND (SSD1306_ACTIVATE_SCROLL); // start scroll
 }
 
 
-void ssd1306_scroll_text(SSD1306_t * dev, const char * text, int text_len, bool invert)
+void SSD1306_ScrollLeft(uint8_t start_row, uint8_t end_row)
 {
-	ESP_LOGD(__FUNCTION__, "dev->_scEnable=%d", dev->_scEnable);
-	if (dev->_scEnable == false) return;
-
-	void (*func)(SSD1306_t * dev, int page, int seg, const uint8_t * images, int width);
-	if (dev->_address == SPI_ADDRESS) {
-		func = spi_display_image;
-	} else {
-		func = i2c_display_image;
-	}
-
-	int srcIndex = dev->_scEnd - dev->_scDirection;
-	while(1) {
-		int dstIndex = srcIndex + dev->_scDirection;
-		ESP_LOGD(__FUNCTION__, "srcIndex=%d dstIndex=%d", srcIndex,dstIndex);
-		for(int seg = 0; seg < dev->_width; seg++) {
-			dev->_page[dstIndex]._segs[seg] = dev->_page[srcIndex]._segs[seg];
-		}
-		(*func)(dev, dstIndex, 0, dev->_page[dstIndex]._segs, sizeof(dev->_page[dstIndex]._segs));
-		if (srcIndex == dev->_scStart) break;
-		srcIndex = srcIndex - dev->_scDirection;
-	}
-	
-	int _text_len = text_len;
-	if (_text_len > 16) _text_len = 16;
-	
-	ssd1306_display_text(dev, srcIndex, text, text_len, invert);
-}
-
-void ssd1306_scroll_clear(SSD1306_t * dev)
-{
-	ESP_LOGD(__FUNCTION__, "dev->_scEnable=%d", dev->_scEnable);
-	if (dev->_scEnable == false) return;
-
-	int srcIndex = dev->_scEnd - dev->_scDirection;
-	while(1) {
-		int dstIndex = srcIndex + dev->_scDirection;
-		ESP_LOGD(__FUNCTION__, "srcIndex=%d dstIndex=%d", srcIndex,dstIndex);
-		ssd1306_clear_line(dev, dstIndex, false);
-		if (dstIndex == dev->_scStart) break;
-		srcIndex = srcIndex - dev->_scDirection;
-	}
+  SSD1306_WRITECOMMAND (SSD1306_LEFT_HORIZONTAL_SCROLL);  // send 0x26
+  SSD1306_WRITECOMMAND (0x00);  // send dummy
+  SSD1306_WRITECOMMAND(start_row);  // start page address
+  SSD1306_WRITECOMMAND(0X00);  // time interval 5 frames
+  SSD1306_WRITECOMMAND(end_row);  // end page address
+  SSD1306_WRITECOMMAND(0X00);
+  SSD1306_WRITECOMMAND(0XFF);
+  SSD1306_WRITECOMMAND (SSD1306_ACTIVATE_SCROLL); // start scroll
 }
 
 
-void ssd1306_hardware_scroll(SSD1306_t * dev, ssd1306_scroll_type_t scroll)
+void SSD1306_Scrolldiagright(uint8_t start_row, uint8_t end_row)
 {
-	if (dev->_address == SPI_ADDRESS) {
-		spi_hardware_scroll(dev, scroll);
-	} else {
-		i2c_hardware_scroll(dev, scroll);
-	}
+  SSD1306_WRITECOMMAND(SSD1306_SET_VERTICAL_SCROLL_AREA);  // sect the area
+  SSD1306_WRITECOMMAND (0x00);   // write dummy
+  SSD1306_WRITECOMMAND(SSD1306_HEIGHT);
+
+  SSD1306_WRITECOMMAND(SSD1306_VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL);
+  SSD1306_WRITECOMMAND (0x00);
+  SSD1306_WRITECOMMAND(start_row);
+  SSD1306_WRITECOMMAND(0X00);
+  SSD1306_WRITECOMMAND(end_row);
+  SSD1306_WRITECOMMAND (0x01);
+  SSD1306_WRITECOMMAND (SSD1306_ACTIVATE_SCROLL);
 }
 
-// delay = 0 : display with no wait
-// delay > 0 : display with wait
-// delay < 0 : no display
-void ssd1306_wrap_arround(SSD1306_t * dev, ssd1306_scroll_type_t scroll, int start, int end, int8_t delay)
+
+void SSD1306_Scrolldiagleft(uint8_t start_row, uint8_t end_row)
 {
-	if (scroll == SCROLL_RIGHT) {
-		int _start = start; // 0 to 7
-		int _end = end; // 0 to 7
-		if (_end >= dev->_pages) _end = dev->_pages - 1;
-		uint8_t wk;
-		//for (int page=0;page<dev->_pages;page++) {
-		for (int page=_start;page<=_end;page++) {
-			wk = dev->_page[page]._segs[127];
-			for (int seg=127;seg>0;seg--) {
-				dev->_page[page]._segs[seg] = dev->_page[page]._segs[seg-1];
-			}
-			dev->_page[page]._segs[0] = wk;
-		}
+  SSD1306_WRITECOMMAND(SSD1306_SET_VERTICAL_SCROLL_AREA);  // sect the area
+  SSD1306_WRITECOMMAND (0x00);   // write dummy
+  SSD1306_WRITECOMMAND(SSD1306_HEIGHT);
 
-	} else if (scroll == SCROLL_LEFT) {
-		int _start = start; // 0 to 7
-		int _end = end; // 0 to 7
-		if (_end >= dev->_pages) _end = dev->_pages - 1;
-		uint8_t wk;
-		//for (int page=0;page<dev->_pages;page++) {
-		for (int page=_start;page<=_end;page++) {
-			wk = dev->_page[page]._segs[0];
-			for (int seg=0;seg<127;seg++) {
-				dev->_page[page]._segs[seg] = dev->_page[page]._segs[seg+1];
-			}
-			dev->_page[page]._segs[127] = wk;
-		}
+  SSD1306_WRITECOMMAND(SSD1306_VERTICAL_AND_LEFT_HORIZONTAL_SCROLL);
+  SSD1306_WRITECOMMAND (0x00);
+  SSD1306_WRITECOMMAND(start_row);
+  SSD1306_WRITECOMMAND(0X00);
+  SSD1306_WRITECOMMAND(end_row);
+  SSD1306_WRITECOMMAND (0x01);
+  SSD1306_WRITECOMMAND (SSD1306_ACTIVATE_SCROLL);
+}
 
-	} else if (scroll == SCROLL_UP) {
-		int _start = start; // 0 to {width-1}
-		int _end = end; // 0 to {width-1}
-		if (_end >= dev->_width) _end = dev->_width - 1;
-		uint8_t wk0;
-		uint8_t wk1;
-		uint8_t wk2;
-		uint8_t save[128];
-		// Save pages 0
-		for (int seg=0;seg<128;seg++) {
-			save[seg] = dev->_page[0]._segs[seg];
-		}
-		// Page0 to Page6
-		for (int page=0;page<dev->_pages-1;page++) {
-			//for (int seg=0;seg<128;seg++) {
-			for (int seg=_start;seg<=_end;seg++) {
-				wk0 = dev->_page[page]._segs[seg];
-				wk1 = dev->_page[page+1]._segs[seg];
-				if (dev->_flip) wk0 = ssd1306_rotate_byte(wk0);
-				if (dev->_flip) wk1 = ssd1306_rotate_byte(wk1);
-				if (seg == 0) {
-					ESP_LOGD(__FUNCTION__, "b page=%d wk0=%02x wk1=%02x", page, wk0, wk1);
-				}
-				wk0 = wk0 >> 1;
-				wk1 = wk1 & 0x01;
-				wk1 = wk1 << 7;
-				wk2 = wk0 | wk1;
-				if (seg == 0) {
-					ESP_LOGD(__FUNCTION__, "a page=%d wk0=%02x wk1=%02x wk2=%02x", page, wk0, wk1, wk2);
-				}
-				if (dev->_flip) wk2 = ssd1306_rotate_byte(wk2);
-				dev->_page[page]._segs[seg] = wk2;
-			}
-		}
-		// Page7
-		int pages = dev->_pages-1;
-		//for (int seg=0;seg<128;seg++) {
-		for (int seg=_start;seg<=_end;seg++) {
-			wk0 = dev->_page[pages]._segs[seg];
-			wk1 = save[seg];
-			if (dev->_flip) wk0 = ssd1306_rotate_byte(wk0);
-			if (dev->_flip) wk1 = ssd1306_rotate_byte(wk1);
-			wk0 = wk0 >> 1;
-			wk1 = wk1 & 0x01;
-			wk1 = wk1 << 7;
-			wk2 = wk0 | wk1;
-			if (dev->_flip) wk2 = ssd1306_rotate_byte(wk2);
-			dev->_page[pages]._segs[seg] = wk2;
-		}
 
-	} else if (scroll == SCROLL_DOWN) {
-		int _start = start; // 0 to {width-1}
-		int _end = end; // 0 to {width-1}
-		if (_end >= dev->_width) _end = dev->_width - 1;
-		uint8_t wk0;
-		uint8_t wk1;
-		uint8_t wk2;
-		uint8_t save[128];
-		// Save pages 7
-		int pages = dev->_pages-1;
-		for (int seg=0;seg<128;seg++) {
-			save[seg] = dev->_page[pages]._segs[seg];
-		}
-		// Page7 to Page1
-		for (int page=pages;page>0;page--) {
-			//for (int seg=0;seg<128;seg++) {
-			for (int seg=_start;seg<=_end;seg++) {
-				wk0 = dev->_page[page]._segs[seg];
-				wk1 = dev->_page[page-1]._segs[seg];
-				if (dev->_flip) wk0 = ssd1306_rotate_byte(wk0);
-				if (dev->_flip) wk1 = ssd1306_rotate_byte(wk1);
-				if (seg == 0) {
-					ESP_LOGD(__FUNCTION__, "b page=%d wk0=%02x wk1=%02x", page, wk0, wk1);
-				}
-				wk0 = wk0 << 1;
-				wk1 = wk1 & 0x80;
-				wk1 = wk1 >> 7;
-				wk2 = wk0 | wk1;
-				if (seg == 0) {
-					ESP_LOGD(__FUNCTION__, "a page=%d wk0=%02x wk1=%02x wk2=%02x", page, wk0, wk1, wk2);
-				}
-				if (dev->_flip) wk2 = ssd1306_rotate_byte(wk2);
-				dev->_page[page]._segs[seg] = wk2;
-			}
-		}
-		// Page0
-		//for (int seg=0;seg<128;seg++) {
-		for (int seg=_start;seg<=_end;seg++) {
-			wk0 = dev->_page[0]._segs[seg];
-			wk1 = save[seg];
-			if (dev->_flip) wk0 = ssd1306_rotate_byte(wk0);
-			if (dev->_flip) wk1 = ssd1306_rotate_byte(wk1);
-			wk0 = wk0 << 1;
-			wk1 = wk1 & 0x80;
-			wk1 = wk1 >> 7;
-			wk2 = wk0 | wk1;
-			if (dev->_flip) wk2 = ssd1306_rotate_byte(wk2);
-			dev->_page[0]._segs[seg] = wk2;
-		}
+void SSD1306_Stopscroll(void)
+{
+	SSD1306_WRITECOMMAND(SSD1306_DEACTIVATE_SCROLL);
+}
 
-	} else if (scroll == PAGE_SCROLL_DOWN) {
-		uint8_t save[128];
-		// Save pages 7
-		for (int seg=0;seg<128;seg++) {
-			save[seg] = dev->_page[dev->_pages-1]._segs[seg];
-		}
-		// Page7 to Page1
-		for (int page=dev->_pages-1;page>0;page--) {
-			for (int seg=0;seg<128;seg++) {
-				dev->_page[page]._segs[seg] = dev->_page[page-1]._segs[seg];
-			}
-		}
-		// Store  pages 0
-		for (int seg=0;seg<128;seg++) {
-			dev->_page[0]._segs[seg] = save[seg];
-		}
 
-	} else if (scroll == PAGE_SCROLL_UP) {
-		uint8_t save[128];
-		// Save pages 0
-		for (int seg=0;seg<128;seg++) {
-			save[seg] = dev->_page[0]._segs[seg];
-		}
-		// Page0 to Page6
-		for (int page=0;page<dev->_pages-1;page++) {
-			for (int seg=0;seg<128;seg++) {
-				dev->_page[page]._segs[seg] = dev->_page[page+1]._segs[seg];
-			}
-		}
-		// Store  pages 7
-		for (int seg=0;seg<128;seg++) {
-			dev->_page[dev->_pages-1]._segs[seg] = save[seg];
-		}
-	}
 
-	if (delay >= 0) {
-		for (int page=0;page<dev->_pages;page++) {
-			if (dev->_address == SPI_ADDRESS) {
-				spi_display_image(dev, page, 0, dev->_page[page]._segs, 128);
-			} else {
-				i2c_display_image(dev, page, 0, dev->_page[page]._segs, 128);
-			}
-			if (delay) vTaskDelay(delay);
-		}
-	}
+void SSD1306_InvertDisplay (int i)
+{
+  if (i) SSD1306_WRITECOMMAND (SSD1306_INVERTDISPLAY);
+
+  else SSD1306_WRITECOMMAND (SSD1306_NORMALDISPLAY);
 
 }
 
-void _ssd1306_bitmaps(SSD1306_t * dev, int xpos, int ypos, const uint8_t * bitmap, int width, int height, bool invert)
+
+void SSD1306_DrawBitmap(int16_t x, int16_t y, const unsigned char* bitmap, int16_t w, int16_t h, uint16_t color)
 {
-	if ( (width % 8) != 0) {
-		ESP_LOGE(__FUNCTION__, "width must be a multiple of 8");
+
+    int16_t byteWidth = (w + 7) / 8; // Bitmap scanline pad = whole byte
+    uint8_t byte = 0;
+
+    for(int16_t j=0; j<h; j++, y++)
+    {
+        for(int16_t i=0; i<w; i++)
+        {
+            if(i & 7)
+            {
+               byte <<= 1;
+            }
+            else
+            {
+               byte = (*(const unsigned char *)(&bitmap[j * byteWidth + i / 8]));
+            }
+            if(byte & 0x80) SSD1306_DrawPixel(x+i, y, color);
+        }
+    }
+}
+
+
+uint8_t SSD1306_Init(ssd1306_i2c_config_t* i2c_cfg) {
+	/* Init I2C */
+    ssd1306_I2C_Init(i2c_cfg);
+
+    /* Check if LCD connected to I2C - probe the device */
+    esp_err_t ret = i2c_master_probe(bus_handle, SSD1306_I2C_ADDR >> 1, -1);
+    
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "SSD1306 not found: %s", esp_err_to_name(ret));
+        return 0;
+    }
+
+    /* A little delay */
+    vTaskDelay(pdMS_TO_TICKS(25)); // 25ms delay
+
+	/* Init LCD */
+	SSD1306_WRITECOMMAND(0xAE); //display off
+	SSD1306_WRITECOMMAND(0x20); //Set Memory Addressing Mode
+	SSD1306_WRITECOMMAND(0x10); //00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
+	SSD1306_WRITECOMMAND(0xB0); //Set Page Start Address for Page Addressing Mode,0-7
+	SSD1306_WRITECOMMAND(0xC8); //Set COM Output Scan Direction
+	SSD1306_WRITECOMMAND(0x00); //---set low column address
+	SSD1306_WRITECOMMAND(0x10); //---set high column address
+	SSD1306_WRITECOMMAND(0x40); //--set start line address
+	SSD1306_WRITECOMMAND(0x81); //--set contrast control register
+	SSD1306_WRITECOMMAND(0xFF);
+	SSD1306_WRITECOMMAND(0xA1); //--set segment re-map 0 to 127
+	SSD1306_WRITECOMMAND(0xA6); //--set normal display
+	SSD1306_WRITECOMMAND(0xA8); //--set multiplex ratio(1 to 64)
+	SSD1306_WRITECOMMAND(0x3F); //
+	SSD1306_WRITECOMMAND(0xA4); //0xa4,Output follows RAM content;0xa5,Output ignores RAM content
+	SSD1306_WRITECOMMAND(0xD3); //-set display offset
+	SSD1306_WRITECOMMAND(0x00); //-not offset
+	SSD1306_WRITECOMMAND(0xD5); //--set display clock divide ratio/oscillator frequency
+	SSD1306_WRITECOMMAND(0xF0); //--set divide ratio
+	SSD1306_WRITECOMMAND(0xD9); //--set pre-charge period
+	SSD1306_WRITECOMMAND(0x22); //
+	SSD1306_WRITECOMMAND(0xDA); //--set com pins hardware configuration
+	SSD1306_WRITECOMMAND(0x12);
+	SSD1306_WRITECOMMAND(0xDB); //--set vcomh
+	SSD1306_WRITECOMMAND(0x20); //0x20,0.77xVcc
+	SSD1306_WRITECOMMAND(0x8D); //--set DC-DC enable
+	SSD1306_WRITECOMMAND(0x14); //
+	SSD1306_WRITECOMMAND(0xAF); //--turn on SSD1306 panel
+
+
+	SSD1306_WRITECOMMAND(SSD1306_DEACTIVATE_SCROLL);
+
+	/* Clear screen */
+	SSD1306_Fill(SSD1306_COLOR_BLACK);
+
+	/* Update screen */
+	SSD1306_UpdateScreen();
+
+	/* Set default values */
+	SSD1306.CurrentX = 0;
+	SSD1306.CurrentY = 0;
+
+	/* Initialized OK */
+	SSD1306.Initialized = 1;
+
+	/* Return OK */
+	return 1;
+}
+
+void SSD1306_UpdateScreen(void) {
+	uint8_t m;
+
+	for (m = 0; m < 8; m++) {
+		SSD1306_WRITECOMMAND(0xB0 + m);
+		SSD1306_WRITECOMMAND(0x00);
+		SSD1306_WRITECOMMAND(0x10);
+
+		/* Write multi data */
+		ssd1306_I2C_WriteMulti(SSD1306_I2C_ADDR, 0x40, &SSD1306_Buffer[SSD1306_WIDTH * m], SSD1306_WIDTH);
+	}
+}
+
+void SSD1306_ToggleInvert(void) {
+	uint16_t i;
+
+	/* Toggle invert */
+	SSD1306.Inverted = !SSD1306.Inverted;
+
+	/* Do memory toggle */
+	for (i = 0; i < sizeof(SSD1306_Buffer); i++) {
+		SSD1306_Buffer[i] = ~SSD1306_Buffer[i];
+	}
+}
+
+void SSD1306_Fill(SSD1306_COLOR_t color) {
+	/* Set memory */
+	memset(SSD1306_Buffer, (color == SSD1306_COLOR_BLACK) ? 0x00 : 0xFF, sizeof(SSD1306_Buffer));
+}
+
+void SSD1306_DrawPixel(uint16_t x, uint16_t y, SSD1306_COLOR_t color) {
+	if (
+		x >= SSD1306_WIDTH ||
+		y >= SSD1306_HEIGHT
+	) {
+		/* Error */
 		return;
 	}
-	int _width = width / 8;
-	uint8_t wk0;
-	uint8_t wk1;
-	uint8_t wk2;
-	uint8_t page = (ypos / 8);
-	uint8_t _seg = xpos;
-	uint8_t dstBits = (ypos % 8);
-	ESP_LOGD(__FUNCTION__, "_width=%d ypos=%d page=%d dstBits=%d", _width, ypos, page, dstBits);
-	int offset = 0;
-	for(int _height=0;_height<height;_height++) {
-		for (int index=0;index<_width;index++) {
-			for (int srcBits=7; srcBits>=0; srcBits--) {
-				wk0 = dev->_page[page]._segs[_seg];
-				if (dev->_flip) wk0 = ssd1306_rotate_byte(wk0);
 
-				wk1 = bitmap[index+offset];
-				if (invert) wk1 = ~wk1;
-
-				//wk2 = ssd1306_copy_bit(bitmap[index+offset], srcBits, wk0, dstBits);
-				wk2 = ssd1306_copy_bit(wk1, srcBits, wk0, dstBits);
-				if (dev->_flip) wk2 = ssd1306_rotate_byte(wk2);
-
-				ESP_LOGD(__FUNCTION__, "index=%d offset=%d wk1=0x%x page=%d _seg=%d, wk2=%02x", index, offset, wk1, page, _seg, wk2);
-				if (_seg >= 128) {
-					ESP_LOGW(__FUNCTION__, "segment is out of range");
-					break;
-				}
-				if (page >= dev->_pages) {
-					ESP_LOGW(__FUNCTION__, "page is out of range");
-					break;
-				}
-				dev->_page[page]._segs[_seg] = wk2;
-				_seg++;
-			}
-		}
-		//vTaskDelay(1);
-		offset = offset + _width;
-		dstBits++;
-		_seg = xpos;
-		if (dstBits == 8) {
-			page++;
-			dstBits=0;
-		}
+	/* Check if pixels are inverted */
+	if (SSD1306.Inverted) {
+		color = (SSD1306_COLOR_t)!color;
 	}
 
-#if 0
-	for (int _seg=ypos;_seg<ypos+width;_seg++) {
-		ssd1306_dump_page(dev, page-1, _seg);
-	}
-	for (int _seg=ypos;_seg<ypos+width;_seg++) {
-		ssd1306_dump_page(dev, page, _seg);
-	}
-#endif
-	//ssd1306_show_buffer(dev);
-}
-
-
-void ssd1306_bitmaps(SSD1306_t * dev, int xpos, int ypos, const uint8_t * bitmap, int width, int height, bool invert)
-{
-	_ssd1306_bitmaps(dev, xpos, ypos, bitmap, width, height, invert);
-	
-	// Calculate the range of pages and segments to update
-	int start_page = ypos / 8;
-	int end_page = (ypos + height - 1) / 8;
-	int start_seg = xpos;
-	int end_seg = xpos + width - 1;
-
-	// Update only the modified pages and segments
-	for (int page = start_page; page <= end_page; page++) {
-		int seg_start = (page == start_page) ? start_seg : 0;
-		int seg_end = (page == end_page) ? end_seg : 127;
-		int seg_width = seg_end - seg_start + 1;
-		ssd1306_display_image(dev, page, seg_start, &dev->_page[page]._segs[seg_start], seg_width);
-	}
-}
-
-
-// Set pixel to internal buffer. Not show it.
-void _ssd1306_pixel(SSD1306_t * dev, int xpos, int ypos, bool invert)
-{
-	uint8_t _page = (ypos / 8);
-	uint8_t _bits = (ypos % 8);
-	uint8_t _seg = xpos;
-	uint8_t wk0 = dev->_page[_page]._segs[_seg];
-	uint8_t wk1 = 1 << _bits;
-	ESP_LOGD(__FUNCTION__, "ypos=%d _page=%d _bits=%d wk0=0x%02x wk1=0x%02x", ypos, _page, _bits, wk0, wk1);
-	if (invert) {
-		wk0 = wk0 & ~wk1;
+	/* Set color */
+	if (color == SSD1306_COLOR_WHITE) {
+		SSD1306_Buffer[x + (y / 8) * SSD1306_WIDTH] |= 1 << (y % 8);
 	} else {
-		wk0 = wk0 | wk1;
-	}
-	if (dev->_flip) wk0 = ssd1306_rotate_byte(wk0);
-	ESP_LOGD(__FUNCTION__, "wk0=0x%02x wk1=0x%02x", wk0, wk1);
-	dev->_page[_page]._segs[_seg] = wk0;
-}
-
-// Set line to internal buffer. Not show it.
-void _ssd1306_line(SSD1306_t * dev, int x1, int y1, int x2, int y2,  bool invert)
-{
-	int i;
-	int dx,dy;
-	int sx,sy;
-	int E;
-
-	/* distance between two points */
-	dx = ( x2 > x1 ) ? x2 - x1 : x1 - x2;
-	dy = ( y2 > y1 ) ? y2 - y1 : y1 - y2;
-
-	/* direction of two point */
-	sx = ( x2 > x1 ) ? 1 : -1;
-	sy = ( y2 > y1 ) ? 1 : -1;
-
-	/* inclination < 1 */
-	if ( dx > dy ) {
-		E = -dx;
-		for ( i = 0 ; i <= dx ; i++ ) {
-			_ssd1306_pixel(dev, x1, y1, invert);
-			x1 += sx;
-			E += 2 * dy;
-			if ( E >= 0 ) {
-			y1 += sy;
-			E -= 2 * dx;
-		}
-	}
-
-	/* inclination >= 1 */
-	} else {
-		E = -dy;
-		for ( i = 0 ; i <= dy ; i++ ) {
-			_ssd1306_pixel(dev, x1, y1, invert);
-			y1 += sy;
-			E += 2 * dx;
-			if ( E >= 0 ) {
-				x1 += sx;
-				E -= 2 * dy;
-			}
-		}
+		SSD1306_Buffer[x + (y / 8) * SSD1306_WIDTH] &= ~(1 << (y % 8));
 	}
 }
 
-// Draw circle
-void _ssd1306_circle(SSD1306_t * dev, int x0, int y0, int r, unsigned int opt, bool invert)
-{
-	int x;
-	int y;
-	int err;
-	int old_err;
-
-	x=0;
-	y=-r;
-	err=2-2*r;
-	do{
-		if ((opt & OLED_DRAW_UPPER_LEFT) == OLED_DRAW_UPPER_LEFT)
-			_ssd1306_pixel(dev, x0-x, y0+y, invert); 
-		if ((opt & OLED_DRAW_UPPER_RIGHT) == OLED_DRAW_UPPER_RIGHT)
-			_ssd1306_pixel(dev, x0-y, y0-x, invert); 
-		if ((opt & OLED_DRAW_LOWER_RIGHT) == OLED_DRAW_LOWER_RIGHT)
-			_ssd1306_pixel(dev, x0+x, y0-y, invert); 
-		if ((opt & OLED_DRAW_LOWER_LEFT) == OLED_DRAW_LOWER_LEFT)
-			_ssd1306_pixel(dev, x0+y, y0+x, invert); 
-		if ((old_err=err)<=x) err+=++x*2+1;
-		if (old_err>y || err>x) err+=++y*2+1;	 
-	} while(y<0);
+void SSD1306_GotoXY(uint16_t x, uint16_t y) {
+	/* Set write pointers */
+	SSD1306.CurrentX = x;
+	SSD1306.CurrentY = y;
 }
 
-// Draw disc (fill circle)
-void _ssd1306_disc(SSD1306_t * dev, int x0, int y0, int r, unsigned int opt, bool invert)
-{
-	int x;
-	int y;
-	int err;
-	int old_err;
-	int ChangeX;
+char SSD1306_Putc(char ch, FontDef_t* Font, SSD1306_COLOR_t color) {
+	uint32_t i, b, j;
 
-	x=0;
-	y=-r;
-	err=2-2*r;
-	ChangeX=1;
-	do{
-		if(ChangeX) {
-			//_ssd1306_line(dev, x0-x, y0-y, x0-x, y0+y, invert);
-			//_ssd1306_line(dev, x0+x, y0-y, x0+x, y0+y, invert);
-			if ((opt & OLED_DRAW_LOWER_LEFT) == OLED_DRAW_LOWER_LEFT)
-				_ssd1306_line(dev, x0-x, y0-y, x0-x, y0, invert);
-			if ((opt & OLED_DRAW_UPPER_LEFT) == OLED_DRAW_UPPER_LEFT)
-				_ssd1306_line(dev, x0-x, y0, x0-x, y0+y, invert);
-			if ((opt & OLED_DRAW_LOWER_RIGHT) == OLED_DRAW_LOWER_RIGHT)
-				_ssd1306_line(dev, x0+x, y0-y, x0+x, y0, invert);
-			if ((opt & OLED_DRAW_UPPER_RIGHT) == OLED_DRAW_UPPER_RIGHT)
-				_ssd1306_line(dev, x0+x, y0, x0+x, y0+y, invert);
-
-		} // endif
-		ChangeX=(old_err=err)<=x;
-		if (ChangeX) err+=++x*2+1;
-		if (old_err>y || err>x) err+=++y*2+1;
-	} while(y<=0);
-
-
-}
-
-// Draw cursor
-void _ssd1306_cursor(SSD1306_t * dev, int x0, int y0, int r, bool invert)
-{
-	_ssd1306_line(dev, x0-r, y0, x0+r, y0, invert);
-	_ssd1306_line(dev, x0, y0-r, x0, y0+r, invert);
-}
-
-void ssd1306_invert(uint8_t *buf, size_t blen)
-{
-	uint8_t wk;
-	for(int i=0; i<blen; i++){
-		wk = buf[i];
-		buf[i] = ~wk;
-	}
-}
-
-// Flip upside down
-void ssd1306_flip(uint8_t *buf, size_t blen)
-{
-	for(int i=0; i<blen; i++){
-		buf[i] = ssd1306_rotate_byte(buf[i]);
-	}
-}
-
-uint8_t ssd1306_copy_bit(uint8_t src, int srcBits, uint8_t dst, int dstBits)
-{
-	ESP_LOGD(__FUNCTION__, "src=%02x srcBits=%d dst=%02x dstBits=%d", src, srcBits, dst, dstBits);
-	uint8_t smask = 0x01 << srcBits;
-	uint8_t dmask = 0x01 << dstBits;
-	uint8_t _src = src & smask;
-#if 0
-	if (_src != 0) _src = 1;
-	uint8_t _wk = _src << dstBits;
-	uint8_t _dst = dst | _wk;
-#endif
-	uint8_t _dst;
-	if (_src != 0) {
-		_dst = dst | dmask; // set bit
-	} else {
-		_dst = dst & ~(dmask); // clear bit
-	}
-	return _dst;
-}
-
-
-// Rotate 8-bit data
-// 0x12-->0x48
-uint8_t ssd1306_rotate_byte(uint8_t ch1) {
-	uint8_t ch2 = 0;
-	for (int j=0;j<8;j++) {
-		ch2 = (ch2 << 1) + (ch1 & 0x01);
-		ch1 = ch1 >> 1;
-	}
-	return ch2;
-}
-
-
-void ssd1306_fadeout(SSD1306_t * dev)
-{
-	void (*func)(SSD1306_t * dev, int page, int seg, const uint8_t * images, int width);
-	if (dev->_address == SPI_ADDRESS) {
-		func = spi_display_image;
-	} else {
-		func = i2c_display_image;
+	/* Check available space in LCD */
+	if (
+		SSD1306_WIDTH <= (SSD1306.CurrentX + Font->FontWidth) ||
+		SSD1306_HEIGHT <= (SSD1306.CurrentY + Font->FontHeight)
+	) {
+		/* Error */
+		return 0;
 	}
 
-	uint8_t image[1];
-	for(int page=0; page<dev->_pages; page++) {
-		image[0] = 0xFF;
-		for(int line=0; line<8; line++) {
-			if (dev->_flip) {
-				image[0] = image[0] >> 1;
+	/* Go through font */
+	for (i = 0; i < Font->FontHeight; i++) {
+		b = Font->data[(ch - 32) * Font->FontHeight + i];
+		for (j = 0; j < Font->FontWidth; j++) {
+			if ((b << j) & 0x8000) {
+				SSD1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), (SSD1306_COLOR_t) color);
 			} else {
-				image[0] = image[0] << 1;
+				SSD1306_DrawPixel(SSD1306.CurrentX + j, (SSD1306.CurrentY + i), (SSD1306_COLOR_t)!color);
 			}
-			for(int seg=0; seg<128; seg++) {
-				(*func)(dev, page, seg, image, 1);
-				dev->_page[page]._segs[seg] = image[0];
-			}
+		}
+	}
+
+	/* Increase pointer */
+	SSD1306.CurrentX += Font->FontWidth;
+
+	/* Return character written */
+	return ch;
+}
+
+char SSD1306_Puts(char* str, FontDef_t* Font, SSD1306_COLOR_t color) {
+	/* Write characters */
+	while (*str) {
+		/* Write character by character */
+		if (SSD1306_Putc(*str, Font, color) != *str) {
+			/* Return error */
+			return *str;
+		}
+
+		/* Increase string pointer */
+		str++;
+	}
+
+	/* Everything OK, zero should be returned */
+	return *str;
+}
+
+
+void SSD1306_DrawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, SSD1306_COLOR_t c) {
+	int16_t dx, dy, sx, sy, err, e2, i, tmp;
+
+	/* Check for overflow */
+	if (x0 >= SSD1306_WIDTH) {
+		x0 = SSD1306_WIDTH - 1;
+	}
+	if (x1 >= SSD1306_WIDTH) {
+		x1 = SSD1306_WIDTH - 1;
+	}
+	if (y0 >= SSD1306_HEIGHT) {
+		y0 = SSD1306_HEIGHT - 1;
+	}
+	if (y1 >= SSD1306_HEIGHT) {
+		y1 = SSD1306_HEIGHT - 1;
+	}
+
+	dx = (x0 < x1) ? (x1 - x0) : (x0 - x1);
+	dy = (y0 < y1) ? (y1 - y0) : (y0 - y1);
+	sx = (x0 < x1) ? 1 : -1;
+	sy = (y0 < y1) ? 1 : -1;
+	err = ((dx > dy) ? dx : -dy) / 2;
+
+	if (dx == 0) {
+		if (y1 < y0) {
+			tmp = y1;
+			y1 = y0;
+			y0 = tmp;
+		}
+
+		if (x1 < x0) {
+			tmp = x1;
+			x1 = x0;
+			x0 = tmp;
+		}
+
+		/* Vertical line */
+		for (i = y0; i <= y1; i++) {
+			SSD1306_DrawPixel(x0, i, c);
+		}
+
+		/* Return from function */
+		return;
+	}
+
+	if (dy == 0) {
+		if (y1 < y0) {
+			tmp = y1;
+			y1 = y0;
+			y0 = tmp;
+		}
+
+		if (x1 < x0) {
+			tmp = x1;
+			x1 = x0;
+			x0 = tmp;
+		}
+
+		/* Horizontal line */
+		for (i = x0; i <= x1; i++) {
+			SSD1306_DrawPixel(i, y0, c);
+		}
+
+		/* Return from function */
+		return;
+	}
+
+	while (1) {
+		SSD1306_DrawPixel(x0, y0, c);
+		if (x0 == x1 && y0 == y1) {
+			break;
+		}
+		e2 = err;
+		if (e2 > -dx) {
+			err -= dy;
+			x0 += sx;
+		}
+		if (e2 < dy) {
+			err += dx;
+			y0 += sy;
 		}
 	}
 }
 
-// Rotate character image
-// Only valid for 8 dots x 8 dots
-void ssd1306_rotate_image(uint8_t *image, bool flip) {
-	uint8_t _image[8];
-	uint8_t _smask = 0x01;
-	for (int i=0;i<8;i++) {
-		uint8_t _dmask = 0x80;
-		_image[i] = 0;
-		for (int j=0;j<8;j++) {
-			uint8_t _wk = image[j] & _smask;
-			ESP_LOGD(__FUNCTION__, "image[%d]=0x%x _smask=0x%x _wk=0x%x", j, image[j], _smask, _wk);
-			if (_wk != 0) {
-				_image[i] = _image[i] + _dmask;
-			}
-			_dmask = _dmask >> 1;
+void SSD1306_DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, SSD1306_COLOR_t c) {
+	/* Check input parameters */
+	if (
+		x >= SSD1306_WIDTH ||
+		y >= SSD1306_HEIGHT
+	) {
+		/* Return error */
+		return;
+	}
+
+	/* Check width and height */
+	if ((x + w) >= SSD1306_WIDTH) {
+		w = SSD1306_WIDTH - x;
+	}
+	if ((y + h) >= SSD1306_HEIGHT) {
+		h = SSD1306_HEIGHT - y;
+	}
+
+	/* Draw 4 lines */
+	SSD1306_DrawLine(x, y, x + w, y, c);         /* Top line */
+	SSD1306_DrawLine(x, y + h, x + w, y + h, c); /* Bottom line */
+	SSD1306_DrawLine(x, y, x, y + h, c);         /* Left line */
+	SSD1306_DrawLine(x + w, y, x + w, y + h, c); /* Right line */
+}
+
+void SSD1306_DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, SSD1306_COLOR_t c) {
+	uint8_t i;
+
+	/* Check input parameters */
+	if (
+		x >= SSD1306_WIDTH ||
+		y >= SSD1306_HEIGHT
+	) {
+		/* Return error */
+		return;
+	}
+
+	/* Check width and height */
+	if ((x + w) >= SSD1306_WIDTH) {
+		w = SSD1306_WIDTH - x;
+	}
+	if ((y + h) >= SSD1306_HEIGHT) {
+		h = SSD1306_HEIGHT - y;
+	}
+
+	/* Draw lines */
+	for (i = 0; i <= h; i++) {
+		/* Draw lines */
+		SSD1306_DrawLine(x, y + i, x + w, y + i, c);
+	}
+}
+
+void SSD1306_DrawTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, SSD1306_COLOR_t color) {
+	/* Draw lines */
+	SSD1306_DrawLine(x1, y1, x2, y2, color);
+	SSD1306_DrawLine(x2, y2, x3, y3, color);
+	SSD1306_DrawLine(x3, y3, x1, y1, color);
+}
+
+
+void SSD1306_DrawFilledTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, SSD1306_COLOR_t color) {
+	int16_t deltax = 0, deltay = 0, x = 0, y = 0, xinc1 = 0, xinc2 = 0,
+	yinc1 = 0, yinc2 = 0, den = 0, num = 0, numadd = 0, numpixels = 0,
+	curpixel = 0;
+
+	deltax = ABS(x2 - x1);
+	deltay = ABS(y2 - y1);
+	x = x1;
+	y = y1;
+
+	if (x2 >= x1) {
+		xinc1 = 1;
+		xinc2 = 1;
+	} else {
+		xinc1 = -1;
+		xinc2 = -1;
+	}
+
+	if (y2 >= y1) {
+		yinc1 = 1;
+		yinc2 = 1;
+	} else {
+		yinc1 = -1;
+		yinc2 = -1;
+	}
+
+	if (deltax >= deltay){
+		xinc1 = 0;
+		yinc2 = 0;
+		den = deltax;
+		num = deltax / 2;
+		numadd = deltay;
+		numpixels = deltax;
+	} else {
+		xinc2 = 0;
+		yinc1 = 0;
+		den = deltay;
+		num = deltay / 2;
+		numadd = deltax;
+		numpixels = deltay;
+	}
+
+	for (curpixel = 0; curpixel <= numpixels; curpixel++) {
+		SSD1306_DrawLine(x, y, x3, y3, color);
+
+		num += numadd;
+		if (num >= den) {
+			num -= den;
+			x += xinc1;
+			y += yinc1;
 		}
-		_smask = _smask << 1;
-	}
-
-	for (int i=0;i<8;i++) {
-		image[i] = _image[i];
-	}
-	if (flip) ssd1306_flip(image, 8);
-#if 0
-	for (int i=0;i<8;i++) {
-		ESP_LOGI(__FUNCTION__, "image[%d]=0x%x", i, image[i]);
-	}
-#endif
-}
-
-void ssd1306_display_rotate_text(SSD1306_t * dev, int seg, const char * text, int text_len, bool invert) {
-	int _text_len = text_len;
-	if (_text_len > 8) _text_len = 8;
-	uint8_t image[8];
-	int _page = dev->_pages-1;
-	for (uint8_t i = 0; i < _text_len; i++) {
-		memcpy(image, font8x8_basic_tr[(uint8_t)text[i]], 8);
-		ssd1306_rotate_image(image, dev->_flip);
-		ESP_LOGD(__FUNCTION__, "_page=%d seg=%d", _page, seg);
-		if (invert) ssd1306_invert(image, 8);
-		ssd1306_display_image(dev, _page, seg, image, 8);
-		_page--;
-		if (_page < 0) return;
+		x += xinc2;
+		y += yinc2;
 	}
 }
 
-void ssd1306_dump(SSD1306_t dev)
+void SSD1306_DrawCircle(int16_t x0, int16_t y0, int16_t r, SSD1306_COLOR_t c) {
+	int16_t f = 1 - r;
+	int16_t ddF_x = 1;
+	int16_t ddF_y = -2 * r;
+	int16_t x = 0;
+	int16_t y = r;
+
+    SSD1306_DrawPixel(x0, y0 + r, c);
+    SSD1306_DrawPixel(x0, y0 - r, c);
+    SSD1306_DrawPixel(x0 + r, y0, c);
+    SSD1306_DrawPixel(x0 - r, y0, c);
+
+    while (x < y) {
+        if (f >= 0) {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f += ddF_x;
+
+        SSD1306_DrawPixel(x0 + x, y0 + y, c);
+        SSD1306_DrawPixel(x0 - x, y0 + y, c);
+        SSD1306_DrawPixel(x0 + x, y0 - y, c);
+        SSD1306_DrawPixel(x0 - x, y0 - y, c);
+
+        SSD1306_DrawPixel(x0 + y, y0 + x, c);
+        SSD1306_DrawPixel(x0 - y, y0 + x, c);
+        SSD1306_DrawPixel(x0 + y, y0 - x, c);
+        SSD1306_DrawPixel(x0 - y, y0 - x, c);
+    }
+}
+
+void SSD1306_DrawFilledCircle(int16_t x0, int16_t y0, int16_t r, SSD1306_COLOR_t c) {
+	int16_t f = 1 - r;
+	int16_t ddF_x = 1;
+	int16_t ddF_y = -2 * r;
+	int16_t x = 0;
+	int16_t y = r;
+
+    SSD1306_DrawPixel(x0, y0 + r, c);
+    SSD1306_DrawPixel(x0, y0 - r, c);
+    SSD1306_DrawPixel(x0 + r, y0, c);
+    SSD1306_DrawPixel(x0 - r, y0, c);
+    SSD1306_DrawLine(x0 - r, y0, x0 + r, y0, c);
+
+    while (x < y) {
+        if (f >= 0) {
+            y--;
+            ddF_y += 2;
+            f += ddF_y;
+        }
+        x++;
+        ddF_x += 2;
+        f += ddF_x;
+
+        SSD1306_DrawLine(x0 - x, y0 + y, x0 + x, y0 + y, c);
+        SSD1306_DrawLine(x0 + x, y0 - y, x0 - x, y0 - y, c);
+
+        SSD1306_DrawLine(x0 + y, y0 + x, x0 - y, y0 + x, c);
+        SSD1306_DrawLine(x0 + y, y0 - x, x0 - y, y0 - x, c);
+    }
+}
+
+
+
+void SSD1306_Clear (void)
 {
-	printf("_address=%x\n",dev._address);
-	printf("_width=%x\n",dev._width);
-	printf("_height=%x\n",dev._height);
-	printf("_pages=%x\n",dev._pages);
+	SSD1306_Fill (0);
+    SSD1306_UpdateScreen();
+}
+void SSD1306_ON(void) {
+	SSD1306_WRITECOMMAND(0x8D);
+	SSD1306_WRITECOMMAND(0x14);
+	SSD1306_WRITECOMMAND(0xAF);
+}
+void SSD1306_OFF(void) {
+	SSD1306_WRITECOMMAND(0x8D);
+	SSD1306_WRITECOMMAND(0x10);
+	SSD1306_WRITECOMMAND(0xAE);
 }
 
-void ssd1306_dump_page(SSD1306_t * dev, int page, int seg)
-{
-	ESP_LOGI(__FUNCTION__, "dev->_page[%d]._segs[%d]=%02x", page, seg, dev->_page[page]._segs[seg]);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  _____ ___   _____
+// |_   _|__ \ / ____|
+//   | |    ) | |
+//   | |   / /| |
+//  _| |_ / /_| |____
+// |_____|____|\_____|
+//
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+// Initialize I2C
+void ssd1306_I2C_Init(ssd1306_i2c_config_t* i2c_cfg) {
+    // Configure I2C master bus
+    i2c_master_bus_config_t i2c_bus_config = {
+        .clk_source = I2C_CLK_SRC_DEFAULT,
+        .i2c_port = I2C_NUM_0,
+        .scl_io_num = i2c_cfg->scl_io_num,
+        .sda_io_num = i2c_cfg->sda_io_num,
+        .glitch_ignore_cnt = 7,
+        .flags.enable_internal_pullup = true,
+    };
+    ESP_LOGI(TAG, "sda_io=%d, scl_io=%d", i2c_cfg->sda_io_num, i2c_cfg->scl_io_num);
+    
+    ESP_ERROR_CHECK(i2c_new_master_bus(&i2c_bus_config, &bus_handle));
+    
+    // Add SSD1306 device to the bus
+    i2c_device_config_t dev_cfg = {
+        .dev_addr_length = I2C_ADDR_BIT_LEN_7,
+        .device_address = SSD1306_I2C_ADDR >> 1,  // Convert 8-bit to 7-bit address
+        .scl_speed_hz = i2c_cfg->freq_hz,
+    };
+    
+    ESP_ERROR_CHECK(i2c_master_bus_add_device(bus_handle, &dev_cfg, &dev_handle));
+    
+    // Delay
+    vTaskDelay(pdMS_TO_TICKS(250));
 }
 
+// Write single byte
+void ssd1306_I2C_Write(uint8_t address, uint8_t reg, uint8_t data) {
+    uint8_t dt[2];
+    dt[0] = reg;
+    dt[1] = data;
+    
+    esp_err_t ret = i2c_master_transmit(dev_handle, dt, 2, -1);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "I2C write failed: %s", esp_err_to_name(ret));
+    }
+}
+
+// Write multiple bytes
+void ssd1306_I2C_WriteMulti(uint8_t address, uint8_t reg, uint8_t* data, uint16_t count) {
+    uint8_t *dt = (uint8_t*)malloc(count + 1);
+    if (dt == NULL) {
+        ESP_LOGE(TAG, "Failed to allocate memory");
+        return;
+    }
+    
+    dt[0] = reg;
+    for(uint16_t i = 0; i < count; i++) {
+        dt[i + 1] = data[i];
+    }
+    
+    esp_err_t ret = i2c_master_transmit(dev_handle, dt, count + 1, -1);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "I2C write multi failed: %s", esp_err_to_name(ret));
+    }
+    
+    free(dt);
+}
